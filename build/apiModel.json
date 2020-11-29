@@ -1,0 +1,1132 @@
+{
+    "Ads": {
+        "type": "object",
+        "properties": {
+            "_id": {
+                "type": "string"
+            },
+            "name": {
+                "type": "string"
+            },
+            "type": {
+                "type": "string",
+                "default": "0"
+            },
+            "carousel": {
+                "type": "boolean",
+                "default": "true"
+            },
+            "state": {
+                "type": "boolean",
+                "default": "true"
+            },
+            "height": {
+                "type": "number",
+                "default": "50"
+            },
+            "date": {
+                "type": "string"
+
+            },
+            "items": {
+                "type": "array",
+                "xml": {
+                    "name": "items",
+                    "wrapped": true
+                },
+                "items": {
+                    "$ref": "#/definitions/AdsItems"
+                }
+            },
+            "comments": {
+                "type": "string"
+            }
+
+        },
+        "xml": {
+            "name": "Ads"
+        }
+    },
+
+    "AdsItems": {
+        "type": "object",
+        "properties": {
+            "_id": {
+                "type": "string"
+            },
+            "title": {
+                "type": "string"
+            },
+            "link": {
+                "type": "string"
+            },
+            "appLink": {
+                "type": "string"
+            },
+            "appLinkType": {
+                "type": "string"
+            },
+            "width": {
+                "type": "string"
+            },
+            "height": {
+                "type": "number",
+                "default": 1
+            },
+            "target": {
+                "type": "string",
+                "default": "_blank"
+            },
+            "sImg": {
+                "type": "string"
+            },
+            "date": {
+                "type": "string"
+            },
+            "alt": {
+                "type": "string"
+            }
+        },
+        "xml": {
+            "name": "Ads"
+        }
+    },
+
+    "Announce": {
+        "type": "object",
+        "properties": {
+            "_id": {
+                "type": "string"
+            },
+            "title": {
+                "type": "string"
+            },
+            "content": {
+                "type": "string"
+            },
+            "type": {
+                "type": "string",
+                "enum": ["1", "2", "3"],
+                "default": "available"
+            },
+            "target": {
+                "type": "string",
+                "$ref": "#/definitions/Content"
+            },
+            "targetType": {
+                "type": "string"
+            },
+            "action": {
+                "type": "string"
+            },
+            "sender": {
+                "type": "string",
+                "$ref": "#/definitions/User"
+            },
+            "adminSender": {
+                "type": "string",
+                "$ref": "#/definitions/AdminUser"
+            },
+            "systemSender": {
+                "type": "string"
+            },
+            "date": {
+                "type": "string"
+
+            }
+
+        },
+        "xml": {
+            "name": "Announce"
+        }
+    },
+
+    "BackUpdata": {
+        "type": "object",
+        "properties": {
+            "_id": {
+                "type": "string"
+            },
+            "date": {
+                "type": "string"
+
+            },
+            "fileName": {
+                "type": "string"
+            },
+            "path": {
+                "type": "string"
+            },
+            "logs": {
+                "type": "string"
+            }
+
+        },
+        "xml": {
+            "name": "Backupdata"
+        }
+    },
+
+    "Content": {
+        "type": "object",
+        "properties": {
+            "_id": {
+                "type": "string"
+            },
+            "title": {
+                "type": "string"
+            },
+            "stitle": {
+                "type": "string"
+            },
+            "type": {
+                "type": "string",
+                "default": "1"
+            },
+            "categories": {
+                "type": "array",
+                "xml": {
+                    "name": "category",
+                    "wrapped": true
+                },
+                "items": {
+                    "$ref": "#/definitions/ContentCategory"
+                }
+            },
+            "sortPath": {
+                "type": "string"
+            },
+            "tags": {
+                "type": "array",
+                "xml": {
+                    "name": "contentTag",
+                    "wrapped": true
+                },
+                "items": {
+                    "$ref": "#/definitions/ContentTag"
+                }
+            },
+            "keywords": {
+                "type": "array",
+                "items": {
+                    "type": "string"
+                }
+            },
+            "sImg": {
+                "type": "string",
+                "default": "/upload/images/defaultImg.jpg"
+            },
+            "sImgType": {
+                "type": "string",
+                "default": "2"
+            },
+            "cover": {
+                "type": "string"
+            },
+            "videoImg": {
+                "type": "string",
+                "default": ""
+            },
+            "discription": {
+                "type": "string"
+            },
+            "appShowType": {
+                "type": "string",
+                "default": "1"
+            },
+            "imageArr": {
+                "type": "array",
+                "items": {
+                    "type": "string"
+                }
+            },
+            "videoArr": [{
+                "type": "string",
+                "items": {
+                    "type": "string"
+                }
+            }],
+            "duration": {
+                "type": "string",
+                "default": "0:01"
+            },
+            "date": {
+                "type": "string"
+
+            },
+            "updateDate": {
+                "type": "string"
+
+            },
+            "author": {
+                "type": "string",
+                "$ref": "#/definitions/AdminUser"
+            },
+            "uAuthor": {
+                "type": "string",
+                "$ref": "#/definitions/User"
+            },
+            "state": {
+                "type": "string",
+                "default": "0"
+            },
+            "draft": {
+                "type": "string",
+                "default": "0"
+            },
+            "dismissReason": {
+                "type": "string"
+            },
+            "isTop": {
+                "type": "number",
+                "default": "0"
+            },
+            "roofPlacement": {
+                "type": "string",
+                "default": "0"
+            },
+            "clickNum": {
+                "type": "number",
+                "default": "1"
+            },
+            "comments": {
+                "type": "string"
+            },
+            "simpleComments": {
+                "type": "string"
+            },
+            "markDownComments": {
+                "type": "string"
+            },
+            "commentNum": {
+                "type": "number",
+                "default": "0"
+            },
+            "likeNum": {
+                "type": "number",
+                "default": "0"
+            }
+        },
+        "xml": {
+            "name": "Content"
+        }
+    },
+
+    "ContentCategory": {
+        "type": "object",
+        "properties": {
+            "_id": {
+                "type": "string"
+            },
+            "uid": {
+                "type": "number",
+                "default": "0"
+            },
+            "name": {
+                "type": "string"
+            },
+            "keywords": {
+                "type": "string"
+            },
+            "type": {
+                "type": "string",
+                "default": "1"
+            },
+            "sortId": {
+                "type": "number",
+                "default": "1"
+            },
+            "parentId": {
+                "type": "string",
+                "default": "0"
+            },
+            "enable": {
+                "type": "boolean",
+                "default": "true"
+            },
+            "date": {
+                "type": "string"
+
+            },
+            "contentTemp": {
+                "type": "string",
+                "$ref": "#/definitions/TemplateItems"
+            },
+            "defaultUrl": {
+                "type": "string",
+                "default": ""
+            },
+            "homePage": {
+                "type": "string",
+                "default": "ui"
+            },
+            "sortPath": {
+                "type": "string",
+                "default": "0"
+            },
+            "comments": {
+                "type": "string"
+            },
+            "sImg": {
+                "type": "string"
+            }
+
+        },
+        "xml": {
+            "name": "ContentCategory"
+        }
+    },
+
+    "ContentTag": {
+        "type": "object",
+        "properties": {
+            "_id": {
+                "type": "string"
+            },
+            "name": {
+                "type": "string"
+            },
+            "alias": {
+                "type": "string"
+            },
+            "date": {
+                "type": "string"
+            },
+            "comments": {
+                "type": "string"
+            }
+        },
+        "xml": {
+            "name": "ContentTag"
+        }
+    },
+
+    "Message": {
+        "type": "object",
+        "properties": {
+            "_id": {
+                "type": "string"
+            },
+            "contentId": {
+                "type": "string",
+                "$ref": "#/definitions/Content"
+            },
+            "contentTitle": {
+                "type": "string"
+            },
+            "author": {
+                "type": "string",
+                "$ref": "#/definitions/User"
+
+            },
+            "adminAuthor": {
+                "type": "string",
+                "$ref": "#/definitions/Content"
+
+            },
+            "replyAuthor": {
+                "type": "string",
+                "$ref": "#/definitions/User"
+            },
+            "adminReplyAuthor": {
+                "type": "string",
+                "$ref": "#/definitions/AdminUser"
+            },
+            "state": {
+                "type": "boolean",
+                "default": false
+            },
+            "utype": {
+                "type": "string",
+                "default": "0"
+            },
+            "relationMsgId": {
+                "type": "string"
+            },
+            "date": {
+                "type": "string"
+            },
+            "praise_num": {
+                "type": "number",
+                "default": 0
+            },
+            "had_praise": {
+                "type": "boolean",
+                "default": false
+            },
+            "praiseMembers": {
+                "type": "string"
+            },
+            "content": {
+                "type": "string",
+                "default": "输入评论内容..."
+            }
+        },
+        "xml": {
+            "name": "Message"
+        }
+    },
+
+    "ContentTemp": {
+        "type": "object",
+        "properties": {
+            "_id": {
+                "type": "string"
+            },
+            "name": {
+                "type": "string"
+            },
+            "alias": {
+                "type": "string",
+                "default": "defaultTemp"
+            },
+            "version": {
+                "type": "array",
+                "items": {
+                    "type": "string"
+                }
+            },
+            "items": {
+                "type": "array",
+                "xml": {
+                    "name": "templateItems",
+                    "wrapped": true
+                },
+                "items": {
+                    "type": "string",
+                    "$ref": "#/definitions/TemplateItems"
+                }
+            },
+            "sImg": {
+                "type": "string",
+                "default": "/stylesheets/backstage/img/screenshot.png"
+            },
+            "author": {
+                "type": "string",
+                "default": "doramart"
+            },
+            "using": {
+                "type": "boolean",
+                "default": false
+            },
+            "date": {
+                "type": "string"
+            },
+            "comment": {
+                "type": "string"
+            }
+        },
+        "xml": {
+            "name": "ContentTemp"
+        }
+    },
+
+    "TemplateItems": {
+        "type": "object",
+        "properties": {
+            "_id": {
+                "type": "string"
+            },
+            "name": {
+                "type": "string"
+            },
+            "forder": {
+                "type": "string",
+                "default": "2-stage-default"
+            },
+            "cateName": {
+                "type": "string",
+                "default": "contentList"
+            },
+            "detailName": {
+                "type": "string",
+                "default": "detail"
+            },
+            "isDefault": {
+                "type": "boolean",
+                "default": false
+            },
+            "date": {
+                "type": "string"
+            },
+            "comment": {
+                "type": "string"
+            }
+        },
+        "xml": {
+            "name": "TemplateItems"
+        }
+    },
+
+    "HelpCenter": {
+        "type": "object",
+        "properties": {
+            "_id": {
+                "type": "string"
+            },
+            "name": {
+                "type": "string"
+            },
+            "lang": {
+                "type": "string",
+                "default": "1"
+            },
+            "state": {
+                "type": "boolean",
+                "default": "false"
+            },
+            "time": {
+                "type": "string"
+
+            },
+            "type": {
+                "type": "string",
+                "default": "0"
+            },
+            "updateTime": {
+                "type": "string"
+
+            },
+            "user": {
+                "type": "string",
+                "$ref": "#/definitions/AdminUser"
+            },
+            "comments": {
+                "type": "string"
+            }
+
+        },
+        "xml": {
+            "name": "HelpCenter"
+        }
+    },
+
+    "MailDelivery": {
+        "type": "object",
+        "properties": {
+            "_id": {
+                "type": "string"
+
+            },
+            "createTime": {
+                "type": "string"
+            },
+            "updateTime": {
+                "type": "string"
+            },
+            "sender": {
+                "type": "string",
+                "$ref": "#/definitions/AdminUser"
+            },
+            "emailType": {
+                "type": "string",
+                "$ref": "#/definitions/MailTemplate"
+            },
+            "state": {
+                "type": "string",
+                "default": "0"
+            },
+            "timing": {
+                "type": "string"
+            },
+            "comments": {
+                "type": "string"
+            },
+            "content": {
+                "type": "string"
+            },
+            "type": {
+                "type": "string",
+                "default": "0"
+            },
+            "targetType": {
+                "type": "string"
+            },
+            "targets": {
+                "type": "array",
+                "xml": {
+                    "name": "user",
+                    "wrapped": true
+                },
+                "items": {
+                    "$ref": "#/definitions/User"
+                }
+            }
+        },
+        "xml": {
+            "name": "MailDelivery"
+        }
+    },
+
+    "MailTemplate": {
+        "type": "object",
+        "properties": {
+            "_id": {
+                "type": "string"
+            },
+            "createTime": {
+                "type": "string"
+            },
+            "updateTime": {
+                "type": "string"
+            },
+            "comment": {
+                "type": "string"
+            },
+            "title": "string",
+            "subTitle": {
+                "type": "string"
+            },
+            "content": {
+                "type": "string"
+            },
+            "type": "string"
+        },
+        "xml": {
+            "name": "MailTemplate"
+        }
+    },
+
+    "SiteMessage": {
+        "type": "object",
+        "properties": {
+            "_id": {
+                "type": "string"
+            },
+            "content": {
+                "type": "string",
+                "$ref": "#/definitions/Content"
+            },
+            "message": {
+                "type": "string",
+                "$ref": "#/definitions/Message"
+            },
+            "type": "string",
+            "date": {
+                "type": "string"
+
+            },
+            "isRead": {
+                "type": "boolean",
+                "default": "false"
+            },
+            "activeUser": {
+                "type": "string",
+                "$ref": "#/definitions/User"
+            },
+            "passiveUser": {
+                "type": "string",
+                "$ref": "#/definitions/User"
+            }
+        },
+        "xml": {
+            "name": "SiteMessage"
+        }
+    },
+
+    "SystemNotify": {
+        "type": "object",
+        "properties": {
+            "_id": {
+                "type": "string"
+            },
+            "isRead": {
+                "type": "boolean",
+                "default": "false"
+            },
+            "user": {
+                "type": "string",
+                "$ref": "#/definitions/User"
+            },
+            "systemUser": {
+                "type": "string",
+                "$ref": "#/definitions/AdminUser"
+            },
+            "notify": {
+                "type": "string",
+                "$ref": "#/definitions/Announce"
+            },
+            "date": {
+                "type": "string"
+
+            }
+
+        },
+        "xml": {
+            "name": "SystemNotify"
+        }
+    },
+
+    "SystemOptionLog": {
+        "type": "object",
+        "properties": {
+            "_id": {
+                "type": "string"
+            },
+            "type": "string",
+            "date": {
+                "type": "string"
+
+            },
+            "logs": "string"
+
+        },
+        "xml": {
+            "name": "SystemOptionLog"
+        }
+    },
+
+    "UploadFile": {
+        "type": "object",
+        "properties": {
+            "_id": {
+                "type": "string"
+            },
+            "createTime": {
+                "type": "string"
+            },
+            "updateTime": {
+                "type": "string"
+            },
+            "type": {
+                "type": "string",
+                "enum": ["local", "qn", "oss"],
+                "default": "available"
+            },
+            "uploadPath": {
+                "type": "string"
+            },
+            "qn_bucket": {
+                "type": "string"
+            },
+            "qn_accessKey": {
+                "type": "string"
+            },
+            "qn_secretKey": {
+                "type": "string"
+            },
+            "qn_zone": {
+                "type": "string"
+            },
+            "qn_endPoint": {
+                "type": "string"
+            },
+            "oss_bucket": {
+                "type": "string"
+            },
+            "oss_accessKey": {
+                "type": "string"
+            },
+            "oss_secretKey": {
+                "type": "string"
+            },
+            "oss_region": {
+                "type": "string"
+            },
+            "oss_endPoint": {
+                "type": "string"
+            },
+            "oss_apiVersion": {
+                "type": "string"
+            }
+        },
+        "xml": {
+            "name": "UploadFile"
+        }
+    },
+
+    "User": {
+        "type": "object",
+        "properties": {
+            "_id": {
+                "type": "string"
+            },
+            "enable": {
+                "type": "boolean",
+                "default": true
+            },
+            "password": {
+                "type": "string"
+            },
+            "countryCode": {
+                "type": "string"
+            },
+            "idType": {
+                "type": "string",
+                "default": "1"
+            },
+            "comments": {
+                "type": "string"
+            },
+            "introduction": {
+                "type": "string"
+            },
+            "date": {
+                "type": "string"
+            },
+            "logo": {
+                "type": "string",
+                "default": "/static/upload/images/defaultlogo.png"
+            },
+            "group": {
+                "type": "string",
+                "default": "0"
+            },
+            "birth": {
+                "type": "string",
+                "default": "1770-01-01T00:00:00.000Z"
+            },
+            "gender": {
+                "type": "string",
+                "default": "0"
+            },
+            "despises": {
+                "type": "array",
+                "xml": {
+                    "name": "despises",
+                    "wrapped": true
+                },
+                "items": {
+                    "type": "string",
+                    "$ref": "#/definitions/Content"
+                }
+            },
+            "despiseMessage": {
+                "type": "array",
+                "xml": {
+                    "name": "despiseMessage",
+                    "wrapped": true
+                },
+                "items": {
+                    "type": "string",
+                    "$ref": "#/definitions/Message"
+                }
+            },
+            "favorites": {
+                "type": "array",
+                "xml": {
+                    "name": "favorites",
+                    "wrapped": true
+                },
+                "items": {
+                    "type": "string",
+                    "$ref": "#/definitions/Content"
+                }
+            },
+            "praiseContents": {
+                "type": "array",
+                "xml": {
+                    "name": "praiseContents",
+                    "wrapped": true
+                },
+                "items": {
+                    "type": "string",
+                    "$ref": "#/definitions/Content"
+                }
+            },
+            "praiseMessages": {
+                "type": "array",
+                "xml": {
+                    "name": "praiseMessages",
+                    "wrapped": true
+                },
+                "items": {
+                    "type": "string",
+                    "$ref": "#/definitions/Message"
+                }
+            },
+            "state": {
+                "default": "1"
+            },
+            "followers": {
+                "type": "array",
+                "xml": {
+                    "name": "followers",
+                    "wrapped": true
+                },
+                "items": {
+                    "type": "string",
+                    "$ref": "#/definitions/User"
+                }
+            },
+            "watchers": {
+                "type": "array",
+                "xml": {
+                    "name": "followers",
+                    "wrapped": true
+                },
+                "items": {
+                    "type": "string",
+                    "$ref": "#/definitions/User"
+                }
+            },
+            "watchTags": {
+                "type": "array",
+                "xml": {
+                    "name": "watchTags",
+                    "wrapped": true
+                },
+                "items": {
+                    "type": "string",
+                    "$ref": "#/definitions/ContentTag"
+                }
+            },
+            "retrieve_time": {
+                "type": "string"
+            },
+            "loginActive": {
+                "type": "boolean",
+                "default": false
+            }
+        },
+        "xml": {
+            "name": "User"
+        }
+    },
+
+    "AdminUser": {
+        "type": "object",
+        "properties": {
+            "_id": {
+                "type": "string"
+            },
+            "countryCode": {
+                "type": "string"
+            },
+            "date": {
+                "type": "string"
+            },
+            "logo": {
+                "type": "string",
+                "default": "/static/upload/images/defaultlogo.png"
+            },
+            "enable": {
+                "type": "boolean",
+                "default": false
+            },
+            "state": {
+                "type": "string",
+                "default": "1"
+            },
+            "auth": {
+                "type": "boolean",
+                "default": false
+            }
+        },
+        "xml": {
+            "name": "ContentTag"
+        }
+    },
+
+    "VersionManage": {
+        "type": "object",
+        "properties": {
+            "_id": {
+                "type": "string"
+            },
+
+            "title": "string",
+            "client": {
+                "type": "string"
+            },
+            "description": {
+                "type": "string"
+            },
+            "version": "number",
+            "versionName": {
+                "type": "string"
+            },
+            "forcibly": {
+                "type": "boolean",
+                "default": "false"
+            },
+            "url": {
+                "type": "string"
+            },
+            "date": {
+                "type": "string"
+
+            }
+
+        },
+        "xml": {
+            "name": "VersionManage"
+        }
+    },
+
+    "ContentCover": {
+        "type": "object",
+        "properties": {
+            "_id": {
+                "type": "string"
+            },
+            "createTime": {
+                "type": "string"
+            },
+            "updateTime": {
+                "type": "string"
+            },
+            "type": {
+                "type": "string",
+                "$ref": "#/definitions/CoverType"
+            },
+            "cover": {
+                "type": "string"
+            },
+            "width": {
+                "type": "string"
+            },
+            "height": {
+                "type": "string"
+            },
+            "backgroundDefaultCss": {
+                "type": "string",
+                "default": ""
+            },
+            "titleColor": {
+                "type": "string",
+                "default": "#409EFF"
+            },
+            "titleSize": {
+                "type": "string",
+                "default": "27"
+            }
+        },
+        "xml": {
+            "name": "ContentCover"
+        }
+    },
+
+    "CoverType": {
+        "type": "object",
+        "properties": {
+            "_id": {
+                "type": "string"
+            },
+            "createTime": {
+                "type": "string"
+            },
+            "updateTime": {
+                "type": "string"
+            },
+            "name": {
+                "type": "string"
+            },
+            "description": {
+                "type": "string"
+            },
+            "structure": {
+                "type": "string"
+            },
+            "isDefault": {
+                "type": "boolean",
+                "default": false
+            }
+        },
+        "xml": {
+            "name": "CoverType"
+        }
+    }
+
+
+}
