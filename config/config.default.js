@@ -117,9 +117,9 @@ module.exports = appInfo => {
 
     // 文件上传
     multipart: {
-      fileSize: '5mb',
-      mode: 'stream',
-      fileExtensions: ['.doc', '.docx'], // 扩展几种上传的文件格式
+      fileSize: '200mb',
+      mode: 'file',
+      fileExtensions: ['.doc', '.docx', '.xls', '.xlsx'], // 扩展几种上传的文件格式
     },
 
     // 数据备份定时

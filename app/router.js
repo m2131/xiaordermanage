@@ -8,5 +8,6 @@ module.exports = app => {
     require('./router/users')(app);
     // FRONT_ROUTER_END
     require('./router/manage')(app);
+    require('./router/shopee')(app);
 
 };
