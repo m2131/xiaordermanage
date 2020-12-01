@@ -32,6 +32,8 @@ module.exports = app => {
             type: Date,
             default: Date.now
         },
+        shopName: String,
+        shopID: String,
         OrderID: String,
         OrderStatus: String,
         TrackingNumber: String,
