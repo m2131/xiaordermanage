@@ -7,7 +7,7 @@ module.exports = app => {
     var shortid = require('shortid');
     var Schema = mongoose.Schema;
 
-    var OrderTWSchema = new Schema({
+    var OrderPHSchema = new Schema({
         _id: {
             type: String,
             'default': shortid.generate
@@ -30,37 +30,49 @@ module.exports = app => {
         shopSite: String,
         OrderID: String,
         OrderStatus: String,
-        CancelReason: String,
-        BuyerAccount: String,
+        TrackingNumber: String,
+        ShippingOption: String,
+        ShipmentMethod: String,
+        EstimatedShipOutDate: String,
         OrderCreationDate: String,
-        OrderSubtotal: String,
-        BuyerExpressFee: String,
-        TotalAmount: String,
-        ShopeeRebate: String,
-        ShopeeCoinsOffset: String,
-        CreditCardDiscountTotal: String,
-        SellerBundleDiscount: String,
-        ShopeeCoinsVoucher: String,
-        ShopeeBundleDiscount: String,
-        TransactionFee: String,
-        ActionFee: String,
-        CashFlowsFee: String,
-        CreditCardFee: String,
+        OrderPaidTime: String,
+        ParentSKUReferenceNo: String,
         ProductName: String,
+        SKUReferenceNo: String,
+        VariationName: String,
         OriginalPrice: String,
         DealPrice: String,
-        ParentSKUReferenceNo: String,
-        SKUReferenceNo: String,
+        Quantity: String,
+        ProductSubtotal: String,
+        SellerRebate: String,
+        SellerDiscount: String,
+        ShopeeRebate: String,
+        SKUTotalWeight: String,
         NoOfProductInOrder: String,
+        OrderTotalWeight: String,
+        SellerVoucher: String,
+        SellerAbsorbedCoinCashback: String,
+        ShopeeVoucher: String,
         BundleDealIndicator: String,
-        DeliveryAddress: String,
+        ShopeeBundleDiscount: String,
+        SellerBundleDiscount: String,
+        ShopeeCoinsOffset: String,
+        CreditCardDiscountTotal: String,
+        TotalAmount: String,
+        BuyerPaidShippingFee: String,
+        TransactionFee: String,
+        CommissionFee: String,
+        ServiceFee: String,
+        GrandTotal: String,
+        EstimatedShippingFee: String,
+        UsernameBuyer: String,
         ReceiverName: String,
         PhoneNumber: String,
+        DeliveryAddress: String,
+        Area: String,
+        State: String,
+        Country: String,
         ZipCode: String,
-        DeliveryMethod: String,
-        ShipmentMethod: String,
-        PaymentMethod: String,
-        OrderPaidTime: String,
 
         //拨款信息
         _OriginalPrice: String,
@@ -79,6 +91,6 @@ module.exports = app => {
     });
 
 
-    return mongoose.model("OrderTW", OrderTWSchema, 'orderTW');
+    return mongoose.model("OrderPH", OrderPHSchema, 'orderPH');
 
 }

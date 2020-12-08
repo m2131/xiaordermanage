@@ -16,6 +16,7 @@ const {
     _count,
     _create,
     _update,
+    _updateMany,
     _removes,
     _safeDelete
 } = require('./general');
@@ -25,13 +26,15 @@ class OrderService extends Service {
 
     async find(payload, {
         query = {},
+        sort = {},
         searchKeys = [],
         populate = [],
-        files = null
+        files = null,
+        shopSite = ""
     } = {}) {
-
-        let listdata = _list(this.ctx.model.Order, payload, {
+        let listdata = _list(this.ctx.model["Order"+shopSite.toUpperCase()], payload, {
             query: query,
+            sort: sort,
             searchKeys: searchKeys,
             populate: populate,
             files
@@ -45,28 +48,33 @@ class OrderService extends Service {
         return _count(this.ctx.model.Order, params);
     }
 
-    async create(payload) {
-        return _create(this.ctx.model.Order, payload);
+    async create(payload,shopSite) {
+        return _create(this.ctx.model["Order"+shopSite.toUpperCase()], payload);
     }
 
-    async removes(res, values, key = '_id') {
-        return _removes(res, this.ctx.model.Order, values, key);
+    async removes(res, values,shopSite, key = '_id') {
+        return _removes(res, this.ctx.model["Order"+shopSite.toUpperCase()], values, key);
     }
 
     async safeDelete(res, values) {
         return _safeDelete(res, this.ctx.model.Order, values);
     }
 
-    async update(res, _id, payload) {
-        return _update(res, this.ctx.model.Order, _id, payload);
+    async update(res, _id, payload,shopSite) {
+        return _update(res, this.ctx.model["Order"+shopSite.toUpperCase()], _id, payload);
+    }
+
+    async updateMany(res, _ids, payload,shopSite) {
+        return _updateMany(res, this.ctx.model["Order"+shopSite.toUpperCase()], _ids, payload);
     }
 
     async item(res, {
         query = {},
         populate = [],
-        files = null
+        files = null,
+        shopSite = ""
     } = {}) {
-        return _item(res, this.ctx.model.Order, {
+        return _item(res, this.ctx.model["Order"+shopSite.toUpperCase()], {
             files: files ? files : {
                 password: 0,
                 email: 0

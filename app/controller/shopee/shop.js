@@ -19,8 +19,9 @@ const {
 class ShopController extends Controller {
     async list() {
         const ctx = this.ctx;
+        const {pageSize,pageNo} = ctx.request.body;
         let shopList = await ctx.service.shop.find({
-            isPaging: '0'
+            isPaging: '1',pageSize:pageSize,current:pageNo
         }, {
             files: 'shopID shopName shopSite updateDate'
         });
@@ -28,6 +29,8 @@ class ShopController extends Controller {
             data: shopList
         });
     }
+
+
     async create() {
         const {
             ctx,

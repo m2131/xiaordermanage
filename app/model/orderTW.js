@@ -60,7 +60,22 @@ module.exports = app => {
         DeliveryMethod: String,
         ShipmentMethod: String,
         PaymentMethod: String,
-        OrderPaidTime: String
+        OrderPaidTime: String,
+
+        //拨款信息
+        _OriginalPrice: String,
+        _DealPrice: String,
+        _ShopeeRebate: String,
+        _SellerBundleDiscount: String,
+        _SellerCoinsVoucher: String,
+        _BuyerExpressFee: String,
+        _ShopeeExpressFee: String,
+        _RealityExpressFee: String,
+        _RefundAmount: String,
+        _Commission: String,
+        _ServiceFee: String,
+        _TransactionFee: String,
+        _AppropriationMoney: String,
     });
 
 

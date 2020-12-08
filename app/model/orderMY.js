@@ -6,32 +6,25 @@ module.exports = app => {
     const mongoose = app.mongoose
     var shortid = require('shortid');
     var Schema = mongoose.Schema;
-    require('./adminUser');
 
     var OrderMYSchema = new Schema({
         _id: {
             type: String,
             'default': shortid.generate
         },
-        user: [{
-            type: String,
-            ref: "AdminUser"
-        }],
-        companyID: String,
-        buyShopID: String,
-        buyAccount : String,
-        buyPayAccount: String,
-        buyTime: {
-            type: Date,
-            default: Date.now
-        },
-        buySendCompany: String,
-        buySendType: String,
-        buySendState: String,
         updateDate: {
             type: Date,
             default: Date.now
         },
+        buyShopID: String,
+        buyAccount : String,
+        buyPayAccount: String,
+        buyPrice: String,
+        buySendCompany: String,
+        buySendOrderNo: String,
+        buySendType: String,
+        buySendState: String,
+        buyTime: Date,
         shopName: String,
         shopID: String,
         shopSite: String,
@@ -80,6 +73,21 @@ module.exports = app => {
         State: String,
         Country: String,
         ZipCode: String,
+
+        //拨款信息
+        _OriginalPrice: String,
+        _DealPrice: String,
+        _ShopeeRebate: String,
+        _SellerBundleDiscount: String,
+        _SellerCoinsVoucher: String,
+        _BuyerExpressFee: String,
+        _ShopeeExpressFee: String,
+        _RealityExpressFee: String,
+        _RefundAmount: String,
+        _Commission: String,
+        _ServiceFee: String,
+        _TransactionFee: String,
+        _AppropriationMoney: String,
     });
 
 

@@ -60,11 +60,13 @@ module.exports = {
 
     renderSuccess(ctx, {
         data = {},
+        total = 0,
         message = ''
     } = {}) {
         ctx.body = {
             status: 200,
             data: data || {},
+            total: total || 0,
             message: message || ''
         }
         ctx.status = 200;
