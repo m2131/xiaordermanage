@@ -8,7 +8,7 @@ module.exports = app => {
     var Schema = mongoose.Schema;
     require('./adminUser');
 
-    var OrderSchema = new Schema({
+    var OrderMYSchema = new Schema({
         _id: {
             type: String,
             'default': shortid.generate
@@ -34,6 +34,7 @@ module.exports = app => {
         },
         shopName: String,
         shopID: String,
+        shopSite: String,
         OrderID: String,
         OrderStatus: String,
         TrackingNumber: String,
@@ -82,6 +83,6 @@ module.exports = app => {
     });
 
 
-    return mongoose.model("Order", OrderSchema, 'order');
+    return mongoose.model("OrderMY", OrderMYSchema, 'orderMY');
 
 }
