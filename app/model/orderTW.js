@@ -32,7 +32,7 @@ module.exports = app => {
         OrderStatus: String,
         CancelReason: String,
         BuyerAccount: String,
-        OrderCreationDate: String,
+        OrderCreationDate: Date,
         OrderSubtotal: String,
         BuyerExpressFee: String,
         TotalAmount: String,

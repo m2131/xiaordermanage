@@ -19,11 +19,15 @@ const {
 class OrderController extends Controller {
     async list() {
         const ctx = this.ctx;
-        const {shopSite,shopID,pageSize,pageNo} = ctx.request.body;
+        const {shopSite,shopID,pageSize,pageNo,orderStart,orderEnd} = ctx.request.body;
         let orderList = [];
         let orderListAll = [];
+        let queryData = {shopID: shopID};
+        if(orderStart && orderEnd){
+            queryData.OrderCreationDate = {"$gte": new Date(orderStart), "$lt": new Date(orderEnd)};
+        }
         orderList = await ctx.service.order.find({isPaging: '1',pageSize:pageSize,current:pageNo},
-                {query:{shopID: shopID},shopSite: shopSite,sort:{OrderID: -1}});
+                {query:queryData,shopSite: shopSite,sort:{OrderID: -1}});
         ctx.helper.renderSuccess(ctx, {
             data: orderList,
         });
@@ -94,9 +98,9 @@ class OrderController extends Controller {
                         TrackingNumber: data[i]['Tracking Number*'],
                         ShippingOption: data[i]['Shipping Option'],
                         ShipmentMethod: data[i]['Shipment Method'],
-                        EstimatedShipOutDate: data[i]['Estimated Ship Out Date'],
-                        OrderCreationDate: data[i]['Order Creation Date'],
-                        OrderPaidTime: data[i]['Order Paid Time'],
+                        EstimatedShipOutDate: new Date(data[i]['Estimated Ship Out Date']),
+                        OrderCreationDate: new Date(data[i]['Order Creation Date']),
+                        OrderPaidTime: new Date(data[i]['Order Paid Time']),
                         ParentSKUReferenceNo: data[i]['Parent SKU Reference No.'],
                         ProductName: data[i]['Product Information'],
                         SKUReferenceNo: data[i]['SKU Reference No.'],
@@ -170,8 +174,8 @@ class OrderController extends Controller {
                         TrackingNumber: data[i]['Tracking Number*'],
                         ShippingOption: data[i]['Shipping Option'],
                         ShipmentMethod: data[i]['Shipment Method'],
-                        EstimatedShipOutDate: data[i]['Estimated Ship Out Date'],
-                        OrderCreationDate: data[i]['Order Creation Date'],
+                        EstimatedShipOutDate: new Date(data[i]['Estimated Ship Out Date']),
+                        OrderCreationDate: new Date(data[i]['Order Creation Date']),
                         OrderPaidTime: data[i]['Order Paid Time'],
                         ParentSKUReferenceNo: data[i]['Parent SKU Reference No.'],
                         ProductName: data[i]['Product Information'],
@@ -238,7 +242,7 @@ class OrderController extends Controller {
                         OrderStatus: data[i]['訂單狀態 (單)'],
                         CancelReason: data[i]['取消原因'],
                         BuyerAccount: data[i]['買家帳號 (單)'],
-                        OrderCreationDate: data[i]['訂單成立時間 (單)'],
+                        OrderCreationDate: new Date(data[i]['訂單成立時間 (單)']),
                         OrderSubtotal: data[i]['訂單小計 (單)'],
                         BuyerExpressFee: data[i]['買家支付的運費 (單)'],
                         TotalAmount: data[i]['訂單總金額 (單)'],
