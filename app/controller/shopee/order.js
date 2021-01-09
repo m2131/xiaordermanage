@@ -15,21 +15,153 @@ const pump = require('pump');
 const {
     orderRule
 } = require('@validate')
-
 class OrderController extends Controller {
     async list() {
         const ctx = this.ctx;
-        const {shopSite,shopID,pageSize,pageNo,orderStart,orderEnd} = ctx.request.body;
-        let orderList = [];
-        let orderListAll = [];
-        let queryData = {shopID: shopID};
+        const {shopSite,shopID,pageSize,pageNo,orderStart,orderEnd,orderStatus,exclusionCanceled,mergeOrder} = ctx.request.body;
+        /**重新导入数据**/
+        let shopeeOrder = await ctx.service.shopeeOrder.find({current:""},{shopSite: "ph"});
+        if(shopeeOrder.docs.length<=0){
+            let that = this;
+            let OrderPHResult = await that.ctx.model.OrderPH.find();
+            let OrderTWResult = await that.ctx.model.OrderTW.find();
+            let OrderMYResult = await that.ctx.model.OrderMY.find();
+            let newList = [];
+            function addPush(data,type){
+                let newData = {
+                    _id: data._id,
+                    updateDate: data.updateDate,
+                    buyShopID: data.buyShopID,
+                    buyAccount : data.buyAccount,
+                    buyPayAccount: data.buyPayAccount,
+                    buyPrice: data.buyPrice,
+                    buySendCompany: data.buySendCompany,
+                    buySendOrderNo: data.buySendOrderNo,
+                    buySendType: data.buySendType,
+                    buySendState: data.buySendState,
+                    buyTime: data.buyTime,
+                    shopName: data.shopName,
+                    shopID: data.shopID,
+                    shopSite: data.shopSite,
+                    OrderID: data.OrderID,
+                    OrderStatus: data.OrderStatus,
+                    OrderCreationDate: data.OrderCreationDate,
+                    DeliveryMethod: data.DeliveryMethod,
+                    NoOfProductInOrder: data.NoOfProductInOrder,
+                    SKUReferenceNo: data.SKUReferenceNo,
+                    ParentSKUReferenceNo: data.ParentSKUReferenceNo,
+                    DealPrice: data.DealPrice,
+                    EstimatedShipOutDate: data.EstimatedShipOutDate,
+                    //拨款信息
+                    _OriginalPrice: data._OriginalPrice,
+                    _DealPrice: data._DealPrice,
+                    _ShopeeRebate: data._ShopeeRebate,
+                    _SellerBundleDiscount: data._SellerBundleDiscount,
+                    _SellerCoinsVoucher: data._SellerCoinsVoucher,
+                    _BuyerExpressFee: data._BuyerExpressFee,
+                    _ShopeeExpressFee: data._ShopeeExpressFee,
+                    _RealityExpressFee: data._RealityExpressFee,
+                    _RefundAmount: data._RefundAmount,
+                    _Commission: data._Commission,
+                    _ServiceFee: data._ServiceFee,
+                    _TransactionFee: data._TransactionFee,
+                    _AppropriationMoney: data._AppropriationMoney,
+                }
+                const phObj = {
+                    "To ship": "待出貨",
+                    "Cancelled": "已取消",
+                    "Unpaid": "尚未付款",
+                    "Completed": "完成",
+                    "Shipping": "運送中"
+                };
+                if(type == "ph" || type == "my"){
+                    newData.OrderStatus =  phObj[data.OrderStatus];
+                }
+                return newData;
+            }
+            OrderPHResult.forEach(function(data) {
+                newList.push(addPush(data,"ph"))
+            });
+            OrderMYResult.forEach(function(data) {
+                newList.push(addPush(data,"my"))
+            });
+            OrderTWResult.forEach(function(data) {
+
+                newList.push(addPush(data,"tw"))
+            });
+            ctx.service.shopeeOrder.create(newList);
+        }
+        /**重新导入数据**/
+        let resultList = [];
+        let queryData = {};
         if(orderStart && orderEnd){
             queryData.OrderCreationDate = {"$gte": new Date(orderStart), "$lt": new Date(orderEnd)};
         }
-        orderList = await ctx.service.order.find({isPaging: '1',pageSize:pageSize,current:pageNo},
+        if(exclusionCanceled){
+            queryData.OrderStatus = {$ne:'已取消'}
+        }
+        shopID && (queryData.shopID = shopID);
+        orderStatus && (queryData.OrderStatus = orderStatus);//exclusionCanceled,mergeOrder
+        if(mergeOrder){
+            resultList = await ctx.service.shopeeOrder.find({isPaging: '1',pageSize:100000,current:1},
                 {query:queryData,shopSite: shopSite,sort:{OrderID: -1}});
+            let listObj = {};
+            resultList.docs.forEach(function(item){
+                if(listObj[item.OrderID]){
+                    let newBuyPrice = 0;
+                    let SKUReferenceNo = listObj[item.OrderID].SKUReferenceNo;
+                    if(listObj[item.OrderID].buyPrice){
+                        newBuyPrice += Number(listObj[item.OrderID].buyPrice);
+                        SKUReferenceNo = SKUReferenceNo + "{" +Number(listObj[item.OrderID].buyPrice).toFixed(1)+"}";
+                    }
+                    SKUReferenceNo = SKUReferenceNo + ";" + item.SKUReferenceNo;
+                    if(item.buyPrice){
+                        newBuyPrice += Number(item.buyPrice);
+                        SKUReferenceNo = SKUReferenceNo + "{" + Number(item.buyPrice)+"}";
+                    }
+                    listObj[item.OrderID] = item;
+                    newBuyPrice>0 && (listObj[item.OrderID].buyPrice = newBuyPrice);
+                    listObj[item.OrderID].SKUReferenceNo = SKUReferenceNo;
+                }else{
+                    listObj[item.OrderID] = item;
+                }
+            })
+            let newTotalItems = 0;
+            let newResult = [];
+            let totalSellAmount = 0;
+            let totalBuyAmount = 0;
+            for(var listKey in listObj){
+                const listItem = listObj[listKey];
+                ++newTotalItems;
+                newResult.push(listItem);
+                if(listItem.DealPrice){
+                    listItem.shopSite == 'my' && (totalSellAmount+= Number(listItem.DealPrice)*1.6067);
+                    listItem.shopSite == 'ph' && (totalSellAmount+= Number(listItem.DealPrice)*0.1347);
+                    listItem.shopSite == 'tw' && (totalSellAmount+= Number(listItem.DealPrice)*0.2313);
+                }
+                if(listItem.buyPrice){
+                    totalBuyAmount+= Number(listItem.buyPrice)
+                }
+            }
+            const pageStart = pageSize*(pageNo-1);
+            const pageEnd = pageSize*pageNo;
+            resultList.docs = [];
+            newResult.forEach((item,key)=>{
+                if(pageStart <= key && key < pageEnd){
+                    resultList.docs.push(item);
+                }
+            })
+            resultList.pageInfo.totalItems = newTotalItems;
+            resultList.pageInfo.pageSize = pageSize;
+            resultList.pageInfo.totalPage = Math.ceil(newTotalItems/pageSize);
+            resultList.pageInfo.totalSellAmount = totalSellAmount.toFixed(2);
+            resultList.pageInfo.totalBuyAmount = totalBuyAmount.toFixed(2);
+        }else{
+            resultList = await ctx.service.shopeeOrder.find({isPaging: '1',pageSize:pageSize,current:pageNo},
+                {query:queryData,shopSite: shopSite,sort:{OrderID: -1}});
+        }
         ctx.helper.renderSuccess(ctx, {
-            data: orderList,
+            data: resultList,
         });
     }
     async upload() {
@@ -94,50 +226,12 @@ class OrderController extends Controller {
                         shopName: shopName,
                         OrderID: data[i]['Order ID'],
                         OrderStatus: data[i]['Order Status'],
-                        CancelReason: data[i]['Cancel reason'],
-                        TrackingNumber: data[i]['Tracking Number*'],
-                        ShippingOption: data[i]['Shipping Option'],
-                        ShipmentMethod: data[i]['Shipment Method'],
-                        EstimatedShipOutDate: new Date(data[i]['Estimated Ship Out Date']),
                         OrderCreationDate: new Date(data[i]['Order Creation Date']),
-                        OrderPaidTime: new Date(data[i]['Order Paid Time']),
-                        ParentSKUReferenceNo: data[i]['Parent SKU Reference No.'],
-                        ProductName: data[i]['Product Information'],
-                        SKUReferenceNo: data[i]['SKU Reference No.'],
-                        VariationName: data[i]['Variation Name'],
-                        OriginalPrice: data[i]['Original Price'],
-                        DealPrice: data[i]['Deal Price'],
-                        Quantity: data[i]['Quantity'],
-                        ProductSubtotal: data[i]['Product Subtotal'],
-                        SellerRebate: data[i]['Seller Rebate'],
-                        SellerDiscount: data[i]['Seller Discount'],
-                        ShopeeRebate: data[i]['Shopee Rebate'],
-                        SKUTotalWeight: data[i]['SKU Total Weight'],
                         NoOfProductInOrder: data[i]['No of product in order'],
-                        OrderTotalWeight: data[i]['Order Total Weight'],
-                        SellerVoucher: data[i]['Seller Voucher'],
-                        SellerAbsorbedCoinCashback: data[i]['Seller Absorbed Coin Cashback'],
-                        ShopeeVoucher: data[i]['Shopee Voucher'],
-                        BundleDealIndicator: data[i]['Bundle Deal Indicator'],
-                        ShopeeBundleDiscount: data[i]['Shopee Bundle Discount'],
-                        SellerBundleDiscount: data[i]['Seller Bundle Discount'],
-                        ShopeeCoinsOffset: data[i]['Shopee Coins Offset'],
-                        CreditCardDiscountTotal: data[i]['Credit Card Discount Total'],
-                        TotalAmount: data[i]['Total Amount'],
-                        BuyerPaidShippingFee: data[i]['Buyer Paid Shipping Fee'],
-                        TransactionFee: data[i]['Transaction Fee'],
-                        CommissionFee: data[i]['Commission Fee'],
-                        ServiceFee: data[i]['Service Fee'],
-                        GrandTotal: data[i]['Grand Total'],
-                        EstimatedShippingFee: data[i]['Estimated Shipping Fee'],
-                        UsernameBuyer: data[i]['Username (Buyer)'],
-                        ReceiverName: data[i]['Receiver Name'],
-                        PhoneNumber: data[i]['Phone Number'],
-                        DeliveryAddress: data[i]['Delivery Address'],
-                        Area: data[i]['Area'],
-                        State: data[i]['State'],
-                        Country: data[i]['Country'],
-                        ZipCode: data[i]['Zip Code'],
+                        SKUReferenceNo: data[i]['SKU Reference No.'],
+                        ParentSKUReferenceNo: data[i]['Parent SKU Reference No.'],
+                        DealPrice: data[i]['Deal Price'],
+                        EstimatedShipOutDate: new Date(data[i]['Estimated Ship Out Date']),
                     });
                 }
             }
@@ -170,44 +264,13 @@ class OrderController extends Controller {
                         shopName: shopName,
                         OrderID: data[i]['Order ID'],
                         OrderStatus: data[i]['Order Status'],
-                        CancelReason: data[i]['Cancel reason'],
-                        TrackingNumber: data[i]['Tracking Number*'],
-                        ShippingOption: data[i]['Shipping Option'],
-                        ShipmentMethod: data[i]['Shipment Method'],
-                        EstimatedShipOutDate: new Date(data[i]['Estimated Ship Out Date']),
                         OrderCreationDate: new Date(data[i]['Order Creation Date']),
-                        OrderPaidTime: data[i]['Order Paid Time'],
+                        EstimatedShipOutDate: new Date(data[i]['Estimated Ship Out Date']),
                         ParentSKUReferenceNo: data[i]['Parent SKU Reference No.'],
-                        ProductName: data[i]['Product Information'],
                         SKUReferenceNo: data[i]['SKU Reference No.'],
-                        VariationName: data[i]['Variation Name'],
-                        OriginalPrice: data[i]['Original Price'],
                         DealPrice: data[i]['Deal Price'],
-                        Quantity: data[i]['Quantity'],
-                        ProductSubtotal: data[i]['Product Subtotal'],
-                        SellerDiscount: data[i]['Price Discount(from Seller)(PHP)'],
-                        ShopeeRebate: data[i]['Shopee Rebate(PHP)'],
-                        SKUTotalWeight: data[i]['SKU Total Weight'],
                         NoOfProductInOrder: data[i]['Number of Items in Order'],
-                        OrderTotalWeight: data[i]['Order Total Weight'],
-                        SellerVoucher: data[i]['Seller Voucher(PHP)'],
-                        SellerAbsorbedCoinCashback: data[i]['Seller Absorbed Coin Cashback'],
-                        ShopeeVoucher: data[i]['Shopee Voucher(PHP)'],
-                        BundleDealIndicator: data[i]['Bundle Deals Indicator(Y/N)'],
-                        ShopeeBundleDiscount: data[i]['Shopee Bundle Discount(PHP)'],
-                        SellerBundleDiscount: data[i]['Seller Bundle Discount(PHP)'],
-                        ShopeeCoinsOffset: data[i]['Shopee Coins Offset(PHP)'],
-                        CreditCardDiscountTotal: data[i]['Credit Card Discount Total(PHP)'],
-                        BuyerPaidShippingFee: data[i]['Buyer Paid Shipping Fee'],
-                        ServiceFee: data[i]['Service Fee'],
-                        GrandTotal: data[i]['Grand Total'],
-                        EstimatedShippingFee: data[i]['Estimated Shipping Fee'],
-                        UsernameBuyer: data[i]['Username (Buyer)'],
-                        ReceiverName: data[i]['Receiver Name'],
-                        PhoneNumber: data[i]['Phone Number'],
-                        DeliveryAddress: data[i]['Delivery Address'],
-                        Country: data[i]['Country'],
-                        ZipCode: data[i]['Zip Code'],
+
                     });
                 }
             }
@@ -240,37 +303,12 @@ class OrderController extends Controller {
                         shopName: shopName,
                         OrderID: data[i]['訂單編號 (單)'],
                         OrderStatus: data[i]['訂單狀態 (單)'],
-                        CancelReason: data[i]['取消原因'],
-                        BuyerAccount: data[i]['買家帳號 (單)'],
                         OrderCreationDate: new Date(data[i]['訂單成立時間 (單)']),
-                        OrderSubtotal: data[i]['訂單小計 (單)'],
-                        BuyerExpressFee: data[i]['買家支付的運費 (單)'],
-                        TotalAmount: data[i]['訂單總金額 (單)'],
-                        ShopeeRebate: data[i]['蝦皮補貼 (單)'],
-                        ShopeeCoinsOffset: data[i]['蝦幣折抵 (單)'],
-                        CreditCardDiscountTotal: data[i]['蝦皮信用卡活動折抵 (單)'],
-                        SellerBundleDiscount: data[i]['賣家折扣券折抵金額 (單)'],
-                        ShopeeCoinsVoucher: data[i]['蝦幣回饋券'],
-                        ShopeeBundleDiscount: data[i]['蝦皮折扣券折抵金額 (單)'],
-                        TransactionFee: data[i]['成交手續費 (單)'],
-                        ActionFee: data[i]['活動服務費'],
-                        CashFlowsFee: data[i]['金流服務費'],
-                        CreditCardFee: data[i]['信用卡手續費利率 (單)'],
-                        ProductName: data[i]['商品名稱 (品)'],
-                        OriginalPrice: data[i]['商品原價 (品)'],
                         DealPrice: data[i]['商品活動價格 (品)'],
+                        DeliveryMethod: data[i]['寄送方式 (單)'],
+                        NoOfProductInOrder: data[i]['數量'],
                         ParentSKUReferenceNo: data[i]['主商品貨號'],
                         SKUReferenceNo: data[i]['商品選項貨號'],
-                        NoOfProductInOrder: data[i]['數量'],
-                        BundleDealIndicator: data[i]['促銷組合指標 (品)'],
-                        DeliveryAddress: data[i]['收件地址 (單)'],
-                        ReceiverName: data[i]['收件者姓名 (單)'],
-                        PhoneNumber: data[i]['收件者電話 (單)'],
-                        ZipCode: data[i]['取件門市店號 (單)'],
-                        DeliveryMethod: data[i]['寄送方式 (單)'],
-                        ShipmentMethod: data[i]['出貨方式 (單)'],
-                        PaymentMethod: data[i]['付款方式 (單)'],
-                        OrderPaidTime: data[i]['買家付款時間 (單)'],
                     });
                 }
             }
@@ -291,7 +329,7 @@ class OrderController extends Controller {
             })
 
             console.log("result"+ result.length)
-            oldList = await ctx.service.order.find({isPaging: '0'},{query:{_id: ids},shopSite: shopSite});
+            oldList = await ctx.service.shopeeOrder.find({isPaging: '0'},{query:{_id: ids}});
             console.log("oldList"+oldList.length)
             if(oldList.length>0){
                 oldList.forEach(item=>{
@@ -305,31 +343,31 @@ class OrderController extends Controller {
                         resultNewList.push(item)
                     }
                 })
-                //updateResult = await ctx.service.order.updateMany(result,oldIds.join(","),resultOldList,shopSite);
-                //await ctx.service.order.removes(ctx, oldIds.join(","),shopSite);
+                //updateResult = await ctx.service.shopeeOrder.updateMany(result,oldIds.join(","),resultOldList,shopSite);
+                //await ctx.service.shopeeOrder.removes(ctx, oldIds.join(","),shopSite);
             }else {
                 resultNewList = result;
             }
             console.log("resultNewList"+ resultNewList.length)
             if(resultNewList.length>0){
-                saveResult = await ctx.service.order.create(resultNewList,shopSite);
+                saveResult = await ctx.service.shopeeOrder.create(resultNewList);
             }
             console.log("resultOldList"+resultOldList.length);
             if(resultOldList.length>0){
                 resultOldList.forEach(async item=>{
-                    let updateaa = await ctx.service.order.update(ctx, item._id, item,shopSite);
+                    let updateaa = await ctx.service.shopeeOrder.update(ctx, item._id, item);
                 })
-                //updateResult = await ctx.service.order.updateMany(result,oldIds.join(","),resultOldList,shopSite);
+                //updateResult = await ctx.service.shopeeOrder.updateMany(result,oldIds.join(","),resultOldList,shopSite);
             }
         }else{
             result.forEach(async item=>{
-                let OrderIDResult = await ctx.service.order.find({isPaging: '0'},{query:{OrderID: item.OrderID},shopSite: shopSite});
+                let OrderIDResult = await ctx.service.shopeeOrder.find({isPaging: '0'},{query:{OrderID: item.OrderID}});
                 let OrderIDS = [];
                 if(OrderIDResult.length>0){
                     OrderIDResult.forEach(item=>{
                         OrderIDS.push(item._id);
                     })
-                    saveResult= await ctx.service.order.updateMany(ctx, OrderIDS.join(","), item,shopSite);
+                    saveResult= await ctx.service.shopeeOrder.updateMany(ctx, OrderIDS.join(","), item);
                 }
             })
         }
@@ -358,7 +396,7 @@ class OrderController extends Controller {
             if(fields.buyTime == "new"){
                 formObj.buyTime = new Date();
             }
-            let oldItem = await ctx.service.order.item(ctx, {
+            let oldItem = await ctx.service.shopeeOrder.item(ctx, {
                 query: {
                     _id: fields._id
                 },
@@ -368,7 +406,7 @@ class OrderController extends Controller {
             if (_.isEmpty(oldItem)) {
                 throw new Error("订单不存在");
             }
-            await ctx.service.order.update(ctx, fields._id, formObj,fields.shopSite);
+            await ctx.service.shopeeOrder.update(ctx, fields._id, formObj);
 
             ctx.helper.renderSuccess(ctx);
         } catch (err) {

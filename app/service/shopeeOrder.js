@@ -17,48 +17,53 @@ const {
     _create,
     _update,
     _removes,
+    _updateMany,
     _safeDelete
 } = require('./general');
 
 
-class OrderTWService extends Service {
+class ShopeeOrderService extends Service {
 
     async find(payload, {
         query = {},
+        sort = {},
         searchKeys = [],
         populate = [],
         files = null
     } = {}) {
 
-        let listdata = _list(this.ctx.model.OrderTW, payload, {
+        let listdata = _list(this.ctx.model.ShopeeOrder, payload, {
             query: query,
+            sort: sort,
             searchKeys: searchKeys,
             populate: populate,
             files
         });
         return listdata;
-
     }
 
 
     async count(params = {}) {
-        return _count(this.ctx.model.OrderTW, params);
+        return _count(this.ctx.model.ShopeeOrder, params);
     }
 
     async create(payload) {
-        return _create(this.ctx.model.OrderTW, payload);
+        return _create(this.ctx.model.ShopeeOrder, payload);
     }
 
     async removes(res, values, key = '_id') {
-        return _removes(res, this.ctx.model.OrderTW, values, key);
+        return _removes(res, this.ctx.model.ShopeeOrder, values, key);
     }
 
     async safeDelete(res, values) {
-        return _safeDelete(res, this.ctx.model.OrderTW, values);
+        return _safeDelete(res, this.ctx.model.ShopeeOrder, values);
     }
 
     async update(res, _id, payload) {
-        return _update(res, this.ctx.model.OrderTW, _id, payload);
+        return _update(res, this.ctx.model.ShopeeOrder, _id, payload);
+    }
+    async updateMany(res, _ids, payload) {
+        return _updateMany(res, this.ctx.model.ShopeeOrder, _ids, payload);
     }
 
     async item(res, {
@@ -66,7 +71,7 @@ class OrderTWService extends Service {
         populate = [],
         files = null
     } = {}) {
-        return _item(res, this.ctx.model.OrderTW, {
+        return _item(res, this.ctx.model.ShopeeOrder, {
             files: files ? files : {
                 password: 0,
                 email: 0
@@ -82,4 +87,4 @@ class OrderTWService extends Service {
 
 }
 
-module.exports = OrderTWService;
+module.exports = ShopeeOrderService;

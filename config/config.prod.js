@@ -9,7 +9,7 @@ module.exports = appInfo => {
         // 数据库连接
         mongoose: {
             client: {
-                url: 'mongodb://127.0.0.1:27017/xiama',
+                url: 'mongodb://192.168.3.30:27017/doracms2',
                 options: {
                     useCreateIndex: true,
                     useUnifiedTopology: true,
@@ -20,7 +20,7 @@ module.exports = appInfo => {
         // mongodb相关路径
         mongodb: {
             binPath: '/usr/local/mongodb/mongodb-linux-x86_64-ubuntu1604-4.0.0/bin/',
-            backUpPath: '/home/database/xiama/'
+            backUpPath: '/home/database/doracms2/'
         },
         // 静态目录
         static: {
